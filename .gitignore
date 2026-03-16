@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+*.log
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+frontend/.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI Models and Artifacts (large files, not for Git)
+app/models/
+artifacts/
+*.safetensors
+*.bin
+*.pt
+*.onnx
+*.zip
+
+# Data files (large datasets, not for Git)
+app/data/
+
+# SSH keys
+*.pem
+deploy_key
+deploy_key.pub
+ec2_deploy_key
+ec2_deploy_key.pub
+
+artifacts/*
+artifacts-training/**
+
+# Flutter
+flutter/.dart_tool/
+flutter/.flutter-plugins
+flutter/.flutter-plugins-dependencies
+flutter/.packages
+flutter/.pub-cache/
+flutter/.pub/
+flutter/build/
+flutter/pubspec.lock
+flutter/*.iml
+flutter/.idea/
+flutter/.metadata
+flutter/flutter_*.png
