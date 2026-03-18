@@ -18,8 +18,8 @@ from labzang.apps.soccer.application.hub.repositories.schedule_repository import
 logger = logging.getLogger(__name__)
 
 
-class ScheduleRepositoryImpl(ScheduleRepositoryPort):
-    """Schedule repository port implementation. Creates session and delegates to ScheduleRepository."""
+class ScheduleRepositoryAdapter(ScheduleRepositoryPort):
+    """Schedule repository port adapter. Creates session and delegates to ScheduleRepository."""
 
     async def find_by_id(self, schedule_id: int) -> Optional[Any]:
         async with AsyncSessionLocal() as session:

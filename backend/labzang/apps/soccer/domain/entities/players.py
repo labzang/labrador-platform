@@ -1,109 +1,114 @@
-"""?�수(Player) SQLAlchemy 모델."""
+# -*- coding: utf-8 -*-
+"""??(Player) ? ?? ??? SQLAlchemy ??."""
 
-from sqlalchemy import Column, String, Integer, BigInteger, Date, ForeignKey
+from sqlalchemy import Column, String, Integer, BigInteger, Date, ForeignKey, Text, TIMESTAMP, func
 from sqlalchemy.orm import relationship
+from pgvector.sqlalchemy import Vector
 
 from labzang.shared.bases import Base
 
 
 class Player(Base):
-    """?�수 ?�보�??�?�하??SQLAlchemy 모델.
+    """
 
     Attributes:
-        id: ?�수 고유 ?�별??(PK, BigInt)
-        team_id: ?� ID (FK -> teams.id)
-        player_name: ?�수�?        e_player_name: ?�문 ?�수�?        nickname: 별명
-        join_yyyy: ?�단?�도
-        position: ?��???        back_no: ?�번??        nation: �?��
-        birth_date: ?�년?�일
-        solar: ?�력/?�력 구분
-        height: ??(cm)
-        weight: 몸무�?(kg)
+        id → 선수 고유 식별자(PK, BigInt)
+        team_id → 팀 ID (FK -> teams.id)
+        player_name → 선수명
+        e_player_name → 영문 선수명
+        nickname → 닉네임
+        join_yyyy → 입단년도
+        position → 포지션
+        back_no → 등번호
+        nation → 국적
+        birth_date → 생년월일
+        solar → 양력/음력 구분
+        height → 키(cm)
+        weight → 몸무게(kg)
     """
 
     __tablename__ = "players"
 
-    # 기본 ??    id = Column(
+    id = Column(
         BigInteger,
         primary_key=True,
-        comment="?�수 고유 ?�별??
+        comment="?? ?? ???"
     )
 
-    # ?�래 ??    team_id = Column(
+    team_id = Column(
         BigInteger,
         ForeignKey("teams.id"),
         nullable=True,
-        comment="?� ID"
+        comment="? ID"
     )
 
-    # ?�수 ?�보
     player_name = Column(
         String(20),
         nullable=True,
-        comment="?�수�?
+        comment="???"
     )
 
     e_player_name = Column(
         String(40),
         nullable=True,
-        comment="?�문 ?�수�?
+        comment="?? ???"
     )
 
     nickname = Column(
         String(30),
         nullable=True,
-        comment="별명"
+        comment="???"
     )
 
     join_yyyy = Column(
         String(10),
         nullable=True,
-        comment="?�단?�도"
+        comment="????"
     )
 
     position = Column(
         String(10),
         nullable=True,
-        comment="?��???
+        comment="???"
     )
 
     back_no = Column(
         Integer,
         nullable=True,
-        comment="?�번??
+        comment="???"
     )
 
     nation = Column(
         String(20),
         nullable=True,
-        comment="�?��"
+        comment="??"
     )
 
     birth_date = Column(
         Date,
         nullable=True,
-        comment="?�년?�일"
+        comment="????"
     )
 
     solar = Column(
         String(10),
         nullable=True,
-        comment="?�력/?�력 구분"
+        comment="??/?? ??"
     )
 
     height = Column(
         Integer,
         nullable=True,
-        comment="??(cm)"
+        comment="?(cm)"
     )
 
     weight = Column(
         Integer,
         nullable=True,
-        comment="몸무�?(kg)"
+        comment="???(kg)"
     )
 
-    # 관�?    team = relationship(
+    team = relationship(
         "Team",
         back_populates="players"
     )

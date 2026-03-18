@@ -18,8 +18,8 @@ from labzang.apps.soccer.application.hub.repositories.team_repository import (
 logger = logging.getLogger(__name__)
 
 
-class TeamRepositoryImpl(TeamRepositoryPort):
-    """Team repository port implementation. Creates session and delegates to TeamRepository."""
+class TeamRepositoryAdapter(TeamRepositoryPort):
+    """Team repository port adapter. Creates session and delegates to TeamRepository."""
 
     async def find_by_id(self, team_id: int) -> Optional[Any]:
         async with AsyncSessionLocal() as session:

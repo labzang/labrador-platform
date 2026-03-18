@@ -18,8 +18,8 @@ from labzang.apps.soccer.application.hub.repositories.stadium_repository import 
 logger = logging.getLogger(__name__)
 
 
-class StadiumRepositoryImpl(StadiumRepositoryPort):
-    """경기장 저장소 포트 구현체. 세션 생성 후 기존 StadiumRepository에 위임."""
+class StadiumRepositoryAdapter(StadiumRepositoryPort):
+    """경기장 저장소 포트 어댑터. 세션 생성 후 기존 StadiumRepository에 위임."""
 
     async def find_by_id(self, stadium_id: int) -> Optional[Any]:
         async with AsyncSessionLocal() as session:

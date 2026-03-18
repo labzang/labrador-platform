@@ -21,9 +21,9 @@ soccer/
     ├── input/                 # 드라이빙 어댑터 (HTTP 등)
     │   └── api/v1/routers/
     │       └── team_router.py  → 유스케이스 호출
-    └── output/                # 드리븐 어댑터 (DB, 외부 API 등)
+    └── outbound/              # 드리븐 어댑터 (DB, 외부 API 등)
         └── persistence/
-            └── team_repository_impl.py  → 출력 포트 구현
+            └── team_repository_adapter.py  → 출력 포트 구현
 ```
 
 ## 의존성 방향
@@ -31,12 +31,12 @@ soccer/
 - **domain**: 어떤 레이어도 의존하지 않음.
 - **application**: `domain` + **ports**(인터페이스만) 에만 의존. 구체적인 DB/HTTP는 모름.
 - **adapter/input**: `application.use_cases`(입력 포트 구현) 호출.
-- **adapter/output**: `application.ports.output` **구현** + 인프라(DB 세션 등) 사용.
+- **adapter/outbound**: `application.ports.output` **구현** + 인프라(DB 세션 등) 사용.
 
 ## 팀 업로드 흐름 (샘플)
 
 1. **라우터** (`adapter/input/.../team_router.py`): JSONL 파싱 후 `ProcessTeamUploadUseCase.execute(items)` 호출.
 2. **유스케이스** (`application/use_cases/process_team_upload_use_case.py`): 정규화 후 `TeamRepositoryPort.upsert_batch()` 호출.
-3. **출력 어댑터** (`adapter/output/persistence/team_repository_impl.py`): `TeamRepositoryPort` 구현, 기존 `TeamRepository`(hub)로 DB 저장.
+3. **출력 어댑터** (`adapter/outbound/persistence/team_repository_adapter.py`): `TeamRepositoryPort` 구현, 기존 `TeamRepository`(hub)로 DB 저장.
 
 기존 `hub.orchestrators`, `hub.repositories`, `spokes` 등은 그대로 두었으며, 팀 업로드만 위 흐름으로 동작합니다.
