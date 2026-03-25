@@ -1,6 +1,7 @@
 """????? ??? ???."""
+
 from labzang.apps.soccer.adapter.outbound.persistence.player_repository_adapter import (
-    PlayerRepositoryAdapter,
+    PlayerRepositoryImpl,
 )
 from labzang.apps.soccer.adapter.outbound.persistence.schedule_repository_adapter import (
     ScheduleRepositoryAdapter,
@@ -13,7 +14,7 @@ from labzang.apps.soccer.adapter.outbound.persistence.team_repository_adapter im
 )
 
 __all__ = [
-    "PlayerRepositoryAdapter",
+    "PlayerRepositoryImpl",
     "ScheduleRepositoryAdapter",
     "StadiumRepositoryAdapter",
     "TeamRepositoryAdapter",

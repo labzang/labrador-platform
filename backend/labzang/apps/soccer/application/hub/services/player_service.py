@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """선수 업로드 및 임베딩 인덱싱 서비스."""
+
 import logging
 import numpy as np
 from datetime import datetime
@@ -7,10 +8,11 @@ from typing import List, Dict, Any, Optional
 
 from sqlalchemy import select
 from labzang.core.database import AsyncSessionLocal
-from labzang.apps.soccer.application.ports.output import PlayerRepositoryPort
+from labzang.apps.soccer.application.ports.output import PlayerRepository
 from labzang.apps.soccer.hub.repositories.player_repository import PlayerRepository
 from labzang.apps.soccer.domain.entities import Player, PlayerEmbedding
 from ..infrastructure.embedding_client import EmbeddingClient
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,10 +22,13 @@ class PlayerService:
     JSONL 등으로 전달된 players 데이터를 정규화해 DB에 저장하고, 임베딩을 생성합니다.
     """
 
-    def __init__(self, player_repository: Optional[PlayerRepositoryPort] = None):
+    def __init__(self, player_repository: Optional[PlayerRepository] = None):
         self._player_repository = player_repository
         self.client = EmbeddingClient()
-        logger.info("[PlayerService] initialized (port=%s)", "injected" if player_repository else "default")
+        logger.info(
+            "[PlayerService] initialized (port=%s)",
+            "injected" if player_repository else "default",
+        )
 
     def _normalize_player_data(self, item: Dict[str, Any]) -> Dict[str, Any]:
         """원시 선수 데이터를 DB 스키마에 맞게 정규화합니다.
@@ -40,25 +45,39 @@ class PlayerService:
             normalized["id"] = int(item["id"]) if item["id"] is not None else None
 
         if "team_id" in item:
-            normalized["team_id"] = int(item["team_id"]) if item["team_id"] is not None else None
+            normalized["team_id"] = (
+                int(item["team_id"]) if item["team_id"] is not None else None
+            )
 
         if "player_name" in item:
-            normalized["player_name"] = str(item["player_name"])[:20] if item["player_name"] else None
+            normalized["player_name"] = (
+                str(item["player_name"])[:20] if item["player_name"] else None
+            )
 
         if "e_player_name" in item:
-            normalized["e_player_name"] = str(item["e_player_name"])[:40] if item["e_player_name"] else None
+            normalized["e_player_name"] = (
+                str(item["e_player_name"])[:40] if item["e_player_name"] else None
+            )
 
         if "nickname" in item:
-            normalized["nickname"] = str(item["nickname"])[:30] if item["nickname"] else None
+            normalized["nickname"] = (
+                str(item["nickname"])[:30] if item["nickname"] else None
+            )
 
         if "join_yyyy" in item:
-            normalized["join_yyyy"] = str(item["join_yyyy"])[:10] if item["join_yyyy"] else None
+            normalized["join_yyyy"] = (
+                str(item["join_yyyy"])[:10] if item["join_yyyy"] else None
+            )
 
         if "position" in item:
-            normalized["position"] = str(item["position"])[:10] if item["position"] else None
+            normalized["position"] = (
+                str(item["position"])[:10] if item["position"] else None
+            )
 
         if "back_no" in item:
-            normalized["back_no"] = int(item["back_no"]) if item["back_no"] is not None else None
+            normalized["back_no"] = (
+                int(item["back_no"]) if item["back_no"] is not None else None
+            )
 
         if "nation" in item:
             normalized["nation"] = str(item["nation"])[:20] if item["nation"] else None
@@ -69,11 +88,15 @@ class PlayerService:
                 try:
                     # 문자열이면 파싱
                     if isinstance(birth_date, str):
-                        normalized["birth_date"] = datetime.strptime(birth_date, "%Y-%m-%d").date()
+                        normalized["birth_date"] = datetime.strptime(
+                            birth_date, "%Y-%m-%d"
+                        ).date()
                     else:
                         normalized["birth_date"] = birth_date
                 except (ValueError, TypeError):
-                    logger.warning(f"[PlayerService] birth_date 파싱 실패: {birth_date}")
+                    logger.warning(
+                        f"[PlayerService] birth_date 파싱 실패: {birth_date}"
+                    )
                     normalized["birth_date"] = None
             else:
                 normalized["birth_date"] = None
@@ -82,16 +105,19 @@ class PlayerService:
             normalized["solar"] = str(item["solar"])[:10] if item["solar"] else None
 
         if "height" in item:
-            normalized["height"] = int(item["height"]) if item["height"] is not None else None
+            normalized["height"] = (
+                int(item["height"]) if item["height"] is not None else None
+            )
 
         if "weight" in item:
-            normalized["weight"] = int(item["weight"]) if item["weight"] is not None else None
+            normalized["weight"] = (
+                int(item["weight"]) if item["weight"] is not None else None
+            )
 
         return normalized
 
     async def _save_players_to_database(
-        self,
-        normalized_items: List[Dict[str, Any]]
+        self, normalized_items: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """정규화된 선수 목록을 Repository를 통해 DB에 저장합니다.
 
@@ -137,7 +163,10 @@ class PlayerService:
                 normalized = self._normalize_player_data(item)
                 normalized_items.append(normalized)
             except Exception as e:
-                logger.error(f"[PlayerService] 항목 정규화 실패: {item.get('id', 'unknown')} - {e}", exc_info=True)
+                logger.error(
+                    f"[PlayerService] 항목 정규화 실패: {item.get('id', 'unknown')} - {e}",
+                    exc_info=True,
+                )
 
         logger.info(f"[PlayerService] 정규화 완료: {len(normalized_items)}건")
 
@@ -213,12 +242,16 @@ class PlayerService:
                     # 임베딩용 텍스트 생성
                     content = self._create_player_content(player)
                     if not content.strip():
-                        logger.warning(f"[PlayerService] 선수 ID {player.id} 스킵 (내용 없음)")
+                        logger.warning(
+                            f"[PlayerService] 선수 ID {player.id} 스킵 (내용 없음)"
+                        )
                         continue
 
                     # 기존 임베딩 조회
                     existing_embedding_result = await session.execute(
-                        select(PlayerEmbedding).where(PlayerEmbedding.player_id == player.id)
+                        select(PlayerEmbedding).where(
+                            PlayerEmbedding.player_id == player.id
+                        )
                     )
                     existing = existing_embedding_result.scalar_one_or_none()
 
@@ -237,7 +270,7 @@ class PlayerService:
                         new_embedding = PlayerEmbedding(
                             player_id=player.id,
                             content=content,
-                            embedding=embedding_array
+                            embedding=embedding_array,
                         )
                         session.add(new_embedding)
                         created_count += 1
@@ -257,7 +290,7 @@ class PlayerService:
                     error_count += 1
                     logger.error(
                         f"[PlayerService] 선수 ID {player.id} 임베딩 처리 실패: {str(e)}",
-                        exc_info=True
+                        exc_info=True,
                     )
 
             # 최종 커밋
@@ -269,7 +302,7 @@ class PlayerService:
                 "processed_count": processed_count,
                 "created_count": created_count,
                 "updated_count": updated_count,
-                "error_count": error_count
+                "error_count": error_count,
             }
 
             logger.info(

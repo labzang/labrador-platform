@@ -6,7 +6,7 @@
 
 - **orchestrators**: 업로드/처리 흐름 조합. 필요한 서비스(및 포트)를 조합해 호출.
 - **repositories**: `application/ports/output`의 저장소 **포트 구현**.  
-  예: `TeamRepository(TeamRepositoryPort)`, `PlayerRepository(PlayerRepositoryPort)` 등.
+  예: `TeamRepository(TeamRepositoryPort)`, `PlayerRepository(PlayerRepository)` 등.
 - **services**: 규칙 기반 정규화·저장. 생성자에서 **출력 포트(RepositoryPort)를 선택적으로 주입** 가능.  
   주입 시 해당 포트로 저장하고, 미주입 시 기존처럼 `AsyncSessionLocal` + 해당 Repository 사용.
 
